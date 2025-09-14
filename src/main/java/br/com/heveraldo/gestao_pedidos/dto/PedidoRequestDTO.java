@@ -1,24 +1,13 @@
 package br.com.heveraldo.gestao_pedidos.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
+import java.util.UUID;
 
+@Getter
+@Setter
 public class PedidoRequestDTO {
-    private Long clienteId;
+    private UUID clienteId;
     private List<ItemPedidoRequestDTO> itens;
-
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
-
-    public List<ItemPedidoRequestDTO> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemPedidoRequestDTO> itens) {
-        this.itens = itens;
-    }
 }

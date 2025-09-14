@@ -1,13 +1,18 @@
 package br.com.heveraldo.gestao_pedidos.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 public class Estoque {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "produto_id", nullable = false)
@@ -18,28 +23,4 @@ public class Estoque {
     private CentroDistribuicao centroDistribuicao;
 
     private int quantidade;
-
-    public Long getId() { 
-        return id; }
-        
-    public void setId(Long id) { 
-        this.id = id; }
-
-    public Produto getProduto() { 
-        return produto; }
-
-    public void setProduto(Produto produto) { 
-        this.produto = produto; }
-
-    public CentroDistribuicao getCentroDistribuicao() { 
-        return centroDistribuicao; }
-
-    public void setCentroDistribuicao(CentroDistribuicao centroDistribuicao) { 
-        this.centroDistribuicao = centroDistribuicao; }
-
-    public int getQuantidade() { 
-        return quantidade; }
-
-    public void setQuantidade(int quantidade) { 
-        this.quantidade = quantidade; }
 }

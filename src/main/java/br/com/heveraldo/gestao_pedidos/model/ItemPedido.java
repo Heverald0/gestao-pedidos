@@ -1,15 +1,19 @@
 package br.com.heveraldo.gestao_pedidos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 public class ItemPedido {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @JsonIgnore
     @ManyToOne
@@ -22,44 +26,4 @@ public class ItemPedido {
 
     private int quantidade;
     private double precoUnitario;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Pedido getPedido() {
-        return pedido;
-    }
-
-    public void setPedido(Pedido pedido) {
-        this.pedido = pedido;
-    }
-
-    public Produto getProduto() {
-        return produto;
-    }
-
-    public void setProduto(Produto produto) {
-        this.produto = produto;
-    }
-
-    public int getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public double getPrecoUnitario() {
-        return precoUnitario;
-    }
-
-    public void setPrecoUnitario(double precoUnitario) {
-        this.precoUnitario = precoUnitario;
-    }
 }

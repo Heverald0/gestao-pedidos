@@ -1,22 +1,12 @@
 package br.com.heveraldo.gestao_pedidos.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import java.util.UUID;
+
+@Getter
+@Setter
 public class ItemPedidoRequestDTO {
-    private Long produtoId;
+    private UUID produtoId;
     private int quantidade;
-    
-    public Long getProdutoId() {
-        return produtoId;
-    }
-
-    public void setProdutoId(Long produtoId) {
-        this.produtoId = produtoId;
-    }
-
-    public int getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
-    }
 }
