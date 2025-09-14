@@ -11,21 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EstoqueService {
 
-    @Autowired
-    private EstoqueRepository estoqueRepository;
-    @Autowired
-    private ProdutoRepository produtoRepository;
-    @Autowired
-    private CentroDistribuicaoRepository cdRepository;
+    @Autowired private EstoqueRepository estoqueRepository;
+    @Autowired private ProdutoRepository produtoRepository;
+    @Autowired private CentroDistribuicaoRepository cdRepository;
 
     public Estoque atualizarEstoque(EstoqueRequestDTO dto) {
         Produto produto = produtoRepository.findById(dto.getProdutoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-        CentroDistribuicao cd = cdRepository.findById(dto.getCdId())
+        CentroDistribuicao cd = cdRepository.findById(dto.getCdId()) 
                 .orElseThrow(() -> new RuntimeException("CD não encontrado"));
 
         Optional<Estoque> estoqueExistenteOpt = estoqueRepository.findByProdutoAndCentroDistribuicao(produto, cd);
@@ -33,9 +31,8 @@ public class EstoqueService {
         Estoque estoque;
         if (estoqueExistenteOpt.isPresent()) {
             estoque = estoqueExistenteOpt.get();
-            estoque.setQuantidade(estoque.getQuantidade() + dto.getQuantidade()); 
+            estoque.setQuantidade(estoque.getQuantidade() + dto.getQuantidade());
         } else {
-            
             estoque = new Estoque();
             estoque.setProduto(produto);
             estoque.setCentroDistribuicao(cd);

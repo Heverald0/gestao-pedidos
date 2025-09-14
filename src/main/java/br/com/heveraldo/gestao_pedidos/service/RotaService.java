@@ -11,24 +11,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RotaService {
 
-    @Autowired
-    private RotaRepository rotaRepository;
-    @Autowired
-    private CaminhaoRepository caminhaoRepository;
-    @Autowired
-    private MotoristaRepository motoristaRepository;
+    @Autowired private RotaRepository rotaRepository;
+    @Autowired private CaminhaoRepository caminhaoRepository;
+    @Autowired private MotoristaRepository motoristaRepository;
 
     public List<Rota> listarTodas() {
         return rotaRepository.findAll();
     }
 
     @Transactional
-    public void finalizarRota(Long rotaId) {
-        Rota rota = rotaRepository.findById(rotaId)
+    public void finalizarRota(UUID rotaId) {
+        Rota rota = rotaRepository.findById(rotaId) 
                 .orElseThrow(() -> new RuntimeException("Rota não encontrada com ID: " + rotaId));
 
         Caminhao caminhao = rota.getCaminhao();

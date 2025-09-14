@@ -4,7 +4,7 @@ import br.com.heveraldo.gestao_pedidos.dto.ItemPedidoRequestDTO;
 import br.com.heveraldo.gestao_pedidos.dto.PedidoRequestDTO;
 import br.com.heveraldo.gestao_pedidos.model.*;
 import br.com.heveraldo.gestao_pedidos.repository.ClienteRepository;
-import br.com.heveraldo.gestao_pedidos.repository.EstoqueRepository; 
+import br.com.heveraldo.gestao_pedidos.repository.EstoqueRepository;
 import br.com.heveraldo.gestao_pedidos.repository.PedidoRepository;
 import br.com.heveraldo.gestao_pedidos.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +15,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID; 
 
 @Service
 public class PedidoService {
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
-    @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
-    private ProdutoRepository produtoRepository;
-    @Autowired
-    private EstoqueRepository estoqueRepository;
+    @Autowired private PedidoRepository pedidoRepository;
+    @Autowired private ClienteRepository clienteRepository;
+    @Autowired private ProdutoRepository produtoRepository;
+    @Autowired private EstoqueRepository estoqueRepository;
 
     @Transactional
     public Pedido criarPedido(PedidoRequestDTO pedidoRequestDTO) {
-        Cliente cliente = clienteRepository.findById(pedidoRequestDTO.getClienteId())
+        Cliente cliente = clienteRepository.findById(pedidoRequestDTO.getClienteId()) 
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado com ID: " + pedidoRequestDTO.getClienteId()));
         CentroDistribuicao cd = cliente.getCentroDistribuicao();
 

@@ -1,7 +1,10 @@
 package br.com.heveraldo.gestao_pedidos.service;
 
 import br.com.heveraldo.gestao_pedidos.model.*;
-import br.com.heveraldo.gestao_pedidos.repository.*;
+import br.com.heveraldo.gestao_pedidos.repository.CaminhaoRepository;
+import br.com.heveraldo.gestao_pedidos.repository.MotoristaRepository;
+import br.com.heveraldo.gestao_pedidos.repository.PedidoRepository;
+import br.com.heveraldo.gestao_pedidos.repository.RotaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +22,14 @@ public class ProcessamentoLoteService {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessamentoLoteService.class);
 
-    @Autowired private PedidoRepository pedidoRepository;
-    @Autowired private CaminhaoRepository caminhaoRepository;
-    @Autowired private RotaRepository rotaRepository;
-    @Autowired private MotoristaRepository motoristaRepository;
+    @Autowired
+    private PedidoRepository pedidoRepository;
+    @Autowired
+    private CaminhaoRepository caminhaoRepository;
+    @Autowired
+    private RotaRepository rotaRepository;
+    @Autowired
+    private MotoristaRepository motoristaRepository;
     
     @Scheduled(cron = "0 * * * * *")
     @Transactional
@@ -47,13 +54,17 @@ public class ProcessamentoLoteService {
     private void processarPedidosDeUmCD(CentroDistribuicao cd) {
         List<Pedido> pedidosPendentesDoCD = pedidoRepository.findByCliente_CentroDistribuicaoAndStatus(cd, StatusPedido.AGUARDANDO_PROCESSAMENTO);
         
+        if (pedidosPendentesDoCD.isEmpty()) {
+            log.info("Nenhum pedido pendente encontrado no CD {}.", cd.getNome());
+            return;
+        }
         while (!pedidosPendentesDoCD.isEmpty()) {
             Caminhao caminhao = caminhaoRepository.findFirstByCentroDistribuicaoAndDisponivelTrue(cd).orElse(null);
             Motorista motorista = motoristaRepository.findFirstByCentroDistribuicaoAndDisponivelTrue(cd).orElse(null);
 
             if (caminhao == null || motorista == null) {
                 log.warn("Recursos insuficientes no CD {}. Caminhão ou motorista não disponível. {} pedidos restantes.", cd.getNome(), pedidosPendentesDoCD.size());
-                break; 
+                break;
             }
 
             log.info("CD {}: Caminhão {} e Motorista {} selecionados.", cd.getNome(), caminhao.getPlaca(), motorista.getNome());
@@ -67,13 +78,24 @@ public class ProcessamentoLoteService {
                 double volumeDoPedido = 0.0;
 
                 for (ItemPedido item : pedido.getItens()) {
-                    pesoDoPedido += item.getQuantidade() * item.getProduto().getPesoKg();
-                    volumeDoPedido += item.getQuantidade() * item.getProduto().getVolumeM3();
+                    Produto produto = item.getProduto();
+                    int quantidade = item.getQuantidade();
+                    
+                    int paletesCheios = 0;
+                    int unidadesSoltas = quantidade;
+
+                    if (produto.getUnidadesPorPalete() > 0 && quantidade >= produto.getUnidadesPorPalete()) {
+                        paletesCheios = quantidade / produto.getUnidadesPorPalete();
+                        unidadesSoltas = quantidade % produto.getUnidadesPorPalete();
+                    }
+
+                    pesoDoPedido += (paletesCheios * produto.getPesoPorPaleteKg()) + (unidadesSoltas * produto.getPesoKg());
+                    volumeDoPedido += (paletesCheios * produto.getVolumePorPaleteM3()) + (unidadesSoltas * produto.getVolumeM3());
                 }
 
                 if ((pesoAtual + pesoDoPedido <= caminhao.getCapacidadePesoKg()) && (volumeAtual + volumeDoPedido <= caminhao.getCapacidadeVolumeM3())) {
                     pedidosParaEstaRota.add(pedido);
-                    pedidosPendentesDoCD.remove(pedido); 
+                    pedidosPendentesDoCD.remove(pedido);
                     pesoAtual += pesoDoPedido;
                     volumeAtual += volumeDoPedido;
                 }
@@ -92,6 +114,7 @@ public class ProcessamentoLoteService {
                     p.setRota(novaRota);
                     pedidoRepository.save(p);
                 }
+                
                 caminhao.setDisponivel(false);
                 motorista.setDisponivel(false);
                 caminhaoRepository.save(caminhao);
@@ -99,7 +122,7 @@ public class ProcessamentoLoteService {
 
                 log.info("CD {}: Rota {} criada com {} pedidos.", cd.getNome(), novaRota.getId(), pedidosParaEstaRota.size());
             } else {
-                log.warn("CD {}: Nenhum pedido coube no caminhão {}. Loop interrompido.", cd.getNome(), caminhao.getPlaca());
+                log.warn("CD {}: Nenhum dos pedidos pendentes coube no caminhão {}. Loop interrompido.", cd.getNome(), caminhao.getPlaca());
                 break;
             }
         }
