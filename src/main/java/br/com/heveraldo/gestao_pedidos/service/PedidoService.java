@@ -15,7 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID; 
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PedidoService {
@@ -69,5 +70,13 @@ public class PedidoService {
         novoPedido.setValorTotal(valorTotalCalculado);
 
         return pedidoRepository.save(novoPedido);
+    }
+
+    public List<Pedido> listarTodos() {
+        return pedidoRepository.findAll();
+    }
+
+    public Optional<Pedido> buscarPorId(UUID id) {
+        return pedidoRepository.findById(id);
     }
 }

@@ -8,6 +8,10 @@ import br.com.heveraldo.gestao_pedidos.repository.MotoristaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class MotoristaService {
 
@@ -27,5 +31,13 @@ public class MotoristaService {
         novoMotorista.setDisponivel(true);
 
         return motoristaRepository.save(novoMotorista);
+    }
+
+    public List<Motorista> listarTodos() {
+        return motoristaRepository.findAll();
+    }
+
+    public Optional<Motorista> buscarPorId(UUID id) {
+        return motoristaRepository.findById(id);
     }
 }

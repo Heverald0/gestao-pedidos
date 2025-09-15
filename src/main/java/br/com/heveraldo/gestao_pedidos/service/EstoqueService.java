@@ -23,7 +23,7 @@ public class EstoqueService {
     public Estoque atualizarEstoque(EstoqueRequestDTO dto) {
         Produto produto = produtoRepository.findById(dto.getProdutoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-        CentroDistribuicao cd = cdRepository.findById(dto.getCdId()) 
+        CentroDistribuicao cd = cdRepository.findById(dto.getCdId())
                 .orElseThrow(() -> new RuntimeException("CD não encontrado"));
 
         Optional<Estoque> estoqueExistenteOpt = estoqueRepository.findByProdutoAndCentroDistribuicao(produto, cd);

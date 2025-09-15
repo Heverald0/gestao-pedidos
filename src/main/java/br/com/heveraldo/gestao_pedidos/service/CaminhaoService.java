@@ -8,6 +8,10 @@ import br.com.heveraldo.gestao_pedidos.repository.CentroDistribuicaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class CaminhaoService {
 
@@ -28,5 +32,13 @@ public class CaminhaoService {
         novoCaminhao.setDisponivel(true);
 
         return caminhaoRepository.save(novoCaminhao);
+    }
+
+    public List<Caminhao> listarTodos() {
+        return caminhaoRepository.findAll();
+    }
+
+    public Optional<Caminhao> buscarPorId(UUID id) {
+        return caminhaoRepository.findById(id);
     }
 }

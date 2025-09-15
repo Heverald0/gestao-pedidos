@@ -24,6 +24,10 @@ public class RotaService {
         return rotaRepository.findAll();
     }
 
+    public Optional<Rota> buscarPorId(UUID id) {
+        return rotaRepository.findById(id);
+    }
+
     @Transactional
     public void finalizarRota(UUID rotaId) {
         Rota rota = rotaRepository.findById(rotaId) 
