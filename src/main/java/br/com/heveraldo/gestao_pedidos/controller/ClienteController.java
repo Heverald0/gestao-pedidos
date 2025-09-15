@@ -2,14 +2,15 @@ package br.com.heveraldo.gestao_pedidos.controller;
 
 import br.com.heveraldo.gestao_pedidos.dto.ClienteRequestDTO;
 import br.com.heveraldo.gestao_pedidos.model.Cliente;
-import br.com.heveraldo.gestao_pedidos.repository.ClienteRepository;
 import br.com.heveraldo.gestao_pedidos.service.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional; 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
@@ -17,22 +18,23 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @Autowired
-    private ClienteRepository clienteRepository; 
-
+    @Operation(summary = "Cria um novo cliente")
     @PostMapping
     public Cliente criarCliente(@RequestBody ClienteRequestDTO clienteRequestDTO) {
         return clienteService.criarCliente(clienteRequestDTO);
     }
 
+    @Operation(summary = "Lista todos os clientes")
     @GetMapping
     public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+        return clienteService.listarTodos();
     }
 
+    @Operation(summary = "Busca um cliente por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
-        Optional<Cliente> cliente = clienteRepository.findById(id);
-        return cliente.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Cliente> buscarClientePorId(@PathVariable UUID id) {
+        return clienteService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
